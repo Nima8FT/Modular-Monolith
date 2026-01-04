@@ -1,0 +1,58 @@
+
+services:
+
+  # PHP Service Container
+  app:
+    build:
+      args:
+        user: nima
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: modular-monolitch
+    container_name: modular-monolitch
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+
+    networks:
+      - modular-monolitch-network
+
+  # Nginx Service
+  nginx:
+    image: nginx:stable-perl
+    container_name: nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d
+    networks:
+      - modular-monolitch-network
+
+  # Database Service
+  db:
+    image: mysql:8.0
+    container_name: db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD:-secret}'
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - mysql:/var/lib/mysql
+    networks:
+      - modular-monolitch-network
+
+networks:
+  modular-monolitch-network:
+    driver: bridge
+
+volumes:
+  mysql:
+    driver: local
