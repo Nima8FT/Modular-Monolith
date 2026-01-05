@@ -9,15 +9,15 @@ services:
         uid: 1000
       context: ./
       dockerfile: Dockerfile
-    image: modular-monolitch
-    container_name: modular-monolitch
+    image: modular-monolith
+    container_name: modular-monolith
     restart: unless-stopped
     working_dir: /var/www/
     volumes:
       - ./:/var/www
 
     networks:
-      - modular-monolitch-network
+      - modular-monolith-network
 
   # Nginx Service
   nginx:
@@ -30,7 +30,7 @@ services:
       - ./:/var/www
       - ./docker-compose/nginx:/etc/nginx/conf.d
     networks:
-      - modular-monolitch-network
+      - modular-monolith-network
 
   # Database Service
   db:
@@ -47,10 +47,10 @@ services:
     volumes:
       - mysql:/var/lib/mysql
     networks:
-      - modular-monolitch-network
+      - modular-monolith-network
 
 networks:
-  modular-monolitch-network:
+  modular-monolith-network:
     driver: bridge
 
 volumes:
